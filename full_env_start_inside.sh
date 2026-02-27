@@ -100,11 +100,40 @@ fi
 
 ################## SUDO PASSWORD PROMPT ##################
 
+SUDO_KEEPALIVE_PID=""
+
+stop_sudo_keepalive() {
+    if [[ -n "$SUDO_KEEPALIVE_PID" ]] && kill -0 "$SUDO_KEEPALIVE_PID" >/dev/null 2>&1; then
+        kill "$SUDO_KEEPALIVE_PID" >/dev/null 2>&1 || true
+        wait "$SUDO_KEEPALIVE_PID" 2>/dev/null || true
+    fi
+}
+
+start_sudo_keepalive() {
+    local keepalive_seconds=28800
+    (
+        local started_at current_epoch
+        started_at=$(date +%s)
+        while true; do
+            sleep 60
+            sudo -n -v >/dev/null 2>&1 || exit 0
+            current_epoch=$(date +%s)
+            if (( current_epoch - started_at >= keepalive_seconds )); then
+                exit 0
+            fi
+        done
+    ) &
+    SUDO_KEEPALIVE_PID=$!
+    trap stop_sudo_keepalive EXIT
+}
+
 if [[ $SKIP_OPENROAD -eq 1 ]] || [[ "${GITHUB_ACTIONS:-}" == "true" && "${OPENROAD_PRE_INSTALLED:-0}" == "1" ]] || [[ -f "openroad_interface/OpenROAD/build/src/openroad" ]]; then
     echo "We likely will not need SUDO permissions for this build."
 else
     echo "SUDO permissions may be required for this build. Enter SUDO password if prompted."
     sudo -v
+    start_sudo_keepalive
+    echo "SUDO permissions will be refreshed for up to 8 hours during this build."
 fi
 echo "Thank you for entering your sudo password if prompted."
 ################## PARSE UNIVERSITY ARGUMENT ##################
