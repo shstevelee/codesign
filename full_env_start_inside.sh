@@ -282,7 +282,7 @@ if [[ $FORCE_FULL -eq 1 ]]; then
     ## update conda packages
     conda update -n base -c defaults conda -y # update conda itself
     conda config --set channel_priority strict
-    conda env update -f "$SETUP_SCRIPTS_FOLDER"/environment_simplified.yml --prune # update the environment
+    conda env update -f "$SETUP_SCRIPTS_FOLDER"/environment_simplified.yml --prune -y # update the environment
 fi
 
 conda activate codesign # activate the codesign environment
