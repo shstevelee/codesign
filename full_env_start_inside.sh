@@ -377,22 +377,7 @@ if [[ -f "$BUILD_LOG" ]]; then
 fi
 
 echo "ENVIRONMENT SETUP COMPLETE"
-
-# Run end-of-build regression tests only for full builds.
-if [[ $FORCE_FULL -eq 1 ]]; then
-    FORCE_FULL=0
-    set --
-    source full_env_start_inside.sh
-    python3 -m test.regression_run -l end_of_build_tests/end_of_build_tests.list.yaml -m 8
-    test_status=$?
-    if [[ $test_status -ne 0 ]]; then
-        echo "BUILD COMPLETED, but failed the test cases."
-    else
-        echo "BUILD COMPLETED SUCCESSFULLY."
-    fi
-else
-    echo "BUILD COMPLETED SUCCESSFULLY."
-fi
+echo "BUILD COMPLETED SUCCESSFULLY."
 
 # End timer
 end_time=$(date +%s)
@@ -406,3 +391,9 @@ seconds=$((duration % 60))
 
 # Print duration
 printf "\nElapsed time: %d minutes and %d seconds\n" $minutes $seconds
+
+# Run end-of-build regression tests only for full builds.
+if [[ $FORCE_FULL -eq 1 ]]; then
+    export BUILD_START_TIME=$start_time
+    source "$(pwd)/run_end_of_build_tests.sh"
+fi
