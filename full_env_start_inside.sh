@@ -100,11 +100,40 @@ fi
 
 ################## SUDO PASSWORD PROMPT ##################
 
+SUDO_KEEPALIVE_PID=""
+
+stop_sudo_keepalive() {
+    if [[ -n "$SUDO_KEEPALIVE_PID" ]] && kill -0 "$SUDO_KEEPALIVE_PID" >/dev/null 2>&1; then
+        kill "$SUDO_KEEPALIVE_PID" >/dev/null 2>&1 || true
+        wait "$SUDO_KEEPALIVE_PID" 2>/dev/null || true
+    fi
+}
+
+start_sudo_keepalive() {
+    local keepalive_seconds=28800
+    (
+        local started_at current_epoch
+        started_at=$(date +%s)
+        while true; do
+            sleep 60
+            sudo -n -v >/dev/null 2>&1 || exit 0
+            current_epoch=$(date +%s)
+            if (( current_epoch - started_at >= keepalive_seconds )); then
+                exit 0
+            fi
+        done
+    ) &
+    SUDO_KEEPALIVE_PID=$!
+    trap stop_sudo_keepalive EXIT
+}
+
 if [[ $SKIP_OPENROAD -eq 1 ]] || [[ "${GITHUB_ACTIONS:-}" == "true" && "${OPENROAD_PRE_INSTALLED:-0}" == "1" ]] || [[ -f "openroad_interface/OpenROAD/build/src/openroad" ]]; then
     echo "We likely will not need SUDO permissions for this build."
 else
     echo "SUDO permissions may be required for this build. Enter SUDO password if prompted."
     sudo -v
+    start_sudo_keepalive
+    echo "SUDO permissions will be refreshed for up to 8 hours during this build."
 fi
 echo "Thank you for entering your sudo password if prompted."
 ################## PARSE UNIVERSITY ARGUMENT ##################
@@ -253,7 +282,7 @@ if [[ $FORCE_FULL -eq 1 ]]; then
     ## update conda packages
     conda update -n base -c defaults conda -y # update conda itself
     conda config --set channel_priority strict
-    conda env update -f "$SETUP_SCRIPTS_FOLDER"/environment_simplified.yml --prune # update the environment
+    conda env update -f "$SETUP_SCRIPTS_FOLDER"/environment_simplified.yml --prune -y # update the environment
 fi
 
 conda activate codesign # activate the codesign environment
@@ -348,22 +377,7 @@ if [[ -f "$BUILD_LOG" ]]; then
 fi
 
 echo "ENVIRONMENT SETUP COMPLETE"
-
-# Run end-of-build regression tests only for full builds.
-if [[ $FORCE_FULL -eq 1 ]]; then
-    FORCE_FULL=0
-    set --
-    source full_env_start_inside.sh
-    python3 -m test.regression_run -l end_of_build_tests/end_of_build_tests.list.yaml -m 8
-    test_status=$?
-    if [[ $test_status -ne 0 ]]; then
-        echo "BUILD COMPLETED, but failed the test cases."
-    else
-        echo "BUILD COMPLETED SUCCESSFULLY."
-    fi
-else
-    echo "BUILD COMPLETED SUCCESSFULLY."
-fi
+echo "BUILD COMPLETED SUCCESSFULLY."
 
 # End timer
 end_time=$(date +%s)
@@ -377,3 +391,9 @@ seconds=$((duration % 60))
 
 # Print duration
 printf "\nElapsed time: %d minutes and %d seconds\n" $minutes $seconds
+
+# Run end-of-build regression tests only for full builds.
+if [[ $FORCE_FULL -eq 1 ]]; then
+    export BUILD_START_TIME=$start_time
+    source "$(pwd)/run_end_of_build_tests.sh"
+fi
