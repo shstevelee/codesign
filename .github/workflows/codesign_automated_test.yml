@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: Codesign-Automated-Test
-    runs-on: bluey-seunghyeok
+    runs-on: self-hosted
     steps:
       - name: Remove old workspace
         run: |
