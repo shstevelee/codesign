@@ -58,3 +58,6 @@ setup_scripts/university_name.txt
 ######
 block_graph.gml
 src/yaml/params_current.yaml
+
+# GitHub Actions Runner folder
+actions-runner/

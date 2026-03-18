@@ -2,7 +2,7 @@
 
 AUTOTEST_REGRESSION_PATH="auto_tests/auto-test.list.yaml"
 
-PREINSTALLED_OPENROAD_PATH="/scratch_disks/scratch3/codesign_dir_with_openroad_for_autotest/codesign/openroad_interface/OpenROAD/build/src/openroad"
+PREINSTALLED_OPENROAD_PATH="/codesign/openroad_interface/OpenROAD/build/src/openroad"
 
 set -eo pipefail
 

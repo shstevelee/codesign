@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     name: Codesign-Automated-Test
-    runs-on: bluey-CMU
+    runs-on: bluey-seunghyeok
     steps:
       - name: Remove old workspace
         run: |
