@@ -200,7 +200,7 @@ if [[ $SKIP_OPENROAD -eq 1 ]]; then
 else
     git submodule update --init --recursive openroad_interface/OpenROAD
 
-    if  [[ "${GITHUB_ACTIONS:-}" == "true" && "${OPENROAD_PRE_INSTALLED:-0}" == "1" ]]; then
+    if  [[ "${GITHUB_ACTIONS:-}" == "true" && "${OPENROAD_PRE_INSTALLED:-0}" == "1" && -f "openroad_interface/OpenROAD/build/src/openroad" ]]; then
         echo "OpenROAD executable already exists."
     else
     # check if the openroad executable exists
@@ -247,7 +247,7 @@ echo "COMPLETED STEP 1: OPENROAD INSTALLATION"
 ################ SET UP SCALEHLS ##################
 echo "STARTING STEP 2: SCALEHLS SETUP"
 ## we want this to operate outside of conda, so do this first
-if [[ "${SCALEHLS_PRE_INSTALLED:-0}" == "1" ]]; then
+if [[ "${SCALEHLS_PRE_INSTALLED:-0}" == "1" && -d "ScaleHLS-HIDA/build/tools/scalehls/python_packages/scalehls_core" ]]; then
     echo "Skipping ScaleHLS setup (SCALEHLS_PRE_INSTALLED=1)."
 else
     source "$SETUP_SCRIPTS_FOLDER"/scale_hls_setup.sh $FORCE_FULL # setup scalehls
@@ -297,7 +297,7 @@ echo "COMPLETED STEP 3: CONDA ENVIRONMENT SETUP"
 echo "STARTING STEP 4: STREAMHLS SETUP"
 ## StreamHLS setup needs conda to be available (setup-env.sh uses conda). 
 ## Note that we run this script with 'bash' since we will source the streamhls environment separately when we need it.
-if [[ "${STREAMHLS_PRE_INSTALLED:-0}" == "1" ]]; then
+if [[ "${STREAMHLS_PRE_INSTALLED:-0}" == "1" ]] && source miniconda3/etc/profile.d/conda.sh && conda env list | grep -q streamhls; then
     echo "Skipping StreamHLS setup (STREAMHLS_PRE_INSTALLED=1)."
 else
     bash "$SETUP_SCRIPTS_FOLDER"/streamhls_setup.sh $FORCE_FULL # setup stream hls
