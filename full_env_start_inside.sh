@@ -200,7 +200,7 @@ if [[ $SKIP_OPENROAD -eq 1 ]]; then
 else
     git submodule update --init --recursive openroad_interface/OpenROAD
 
-    if  [[ "${GITHUB_ACTIONS:-}" == "true" && "${OPENROAD_PRE_INSTALLED:-0}" == "1" && -f "openroad_interface/OpenROAD/build/src/openroad" ]]; then
+    if  [[ ("${GITHUB_ACTIONS:-}" == "true" && "${OPENROAD_PRE_INSTALLED:-0}" == "1" && -f "openroad_interface/OpenROAD/build/src/openroad") || ("${OPENROAD_PRE_INSTALLED:-0}" == "1" && -f "openroad_interface/OpenROAD/build/src/openroad") ]]; then
         echo "OpenROAD executable already exists."
     else
     # check if the openroad executable exists
