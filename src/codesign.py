@@ -1387,6 +1387,16 @@ if __name__ == "__main__":
         type=str,
         help="Path to a pre-installed OpenROAD installation. This is primarily useful for CI testing where OpenRoad is pre-installed on the system.",
     )
+    parser.add_argument(
+        "--preinstalled_scalehls_path",
+        type=str,
+        help="Path to a pre-installed ScaleHLS installation directory. This is primarily useful for CI testing where ScaleHLS is pre-installed on the system.",
+    )
+    parser.add_argument(
+        "--preinstalled_streamhls_path",
+        type=str,
+        help="Path to a pre-installed StreamHLS installation directory. This is primarily useful for CI testing where StreamHLS is pre-installed on the system.",
+    )
     parser.add_argument("--arch_opt_pipeline", type=str, help="architecture optimization pipeline to use")
     parser.add_argument("--streamhls_opt_level", type=str, help="StreamHLS optimization level to use")
     parser.add_argument('--debug_no_cacti', type=bool,

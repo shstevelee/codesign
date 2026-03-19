@@ -25,6 +25,11 @@ jobs:
             export SCALEHLS_PRE_INSTALLED=1
             export STREAMHLS_PRE_INSTALLED=1
             ./full_env_start.sh
+        - name: Verify preinstalled tool paths
+          run: |
+            chmod +x verify_preinstalled_paths.sh || true
+            echo ">>> Verifying preinstalled tool paths..."
+            ./verify_preinstalled_paths.sh
         - name: Run Codesign Script
           run: |
               chmod +x test/automated_test_scripts/automated-scripts.sh || true
