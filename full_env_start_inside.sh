@@ -247,7 +247,11 @@ echo "COMPLETED STEP 1: OPENROAD INSTALLATION"
 ################ SET UP SCALEHLS ##################
 echo "STARTING STEP 2: SCALEHLS SETUP"
 ## we want this to operate outside of conda, so do this first
-source "$SETUP_SCRIPTS_FOLDER"/scale_hls_setup.sh $FORCE_FULL # setup scalehls
+if [[ "${SCALEHLS_PRE_INSTALLED:-0}" == "1" ]]; then
+    echo "Skipping ScaleHLS setup (SCALEHLS_PRE_INSTALLED=1)."
+else
+    source "$SETUP_SCRIPTS_FOLDER"/scale_hls_setup.sh $FORCE_FULL # setup scalehls
+fi
 
 echo "COMPLETED STEP 2: SCALEHLS SETUP"
 
@@ -293,25 +297,29 @@ echo "COMPLETED STEP 3: CONDA ENVIRONMENT SETUP"
 echo "STARTING STEP 4: STREAMHLS SETUP"
 ## StreamHLS setup needs conda to be available (setup-env.sh uses conda). 
 ## Note that we run this script with 'bash' since we will source the streamhls environment separately when we need it.
-bash "$SETUP_SCRIPTS_FOLDER"/streamhls_setup.sh $FORCE_FULL # setup stream hls
+if [[ "${STREAMHLS_PRE_INSTALLED:-0}" == "1" ]]; then
+    echo "Skipping StreamHLS setup (STREAMHLS_PRE_INSTALLED=1)."
+else
+    bash "$SETUP_SCRIPTS_FOLDER"/streamhls_setup.sh $FORCE_FULL # setup stream hls
 
-# Activate ampl license automatically using uuid after Stream-HLS install
-# Read the UUID from ampl_uuid.txt
-UUID=$(cat ampl_uuid.txt)
+    # Activate ampl license automatically using uuid after Stream-HLS install
+    # Read the UUID from ampl_uuid.txt
+    UUID=$(cat ampl_uuid.txt)
 
-# Navigate to the ampl directory
-cd Stream-HLS/ampl.linux-intel64
+    # Navigate to the ampl directory
+    cd Stream-HLS/ampl.linux-intel64
 
-# Run ampl with commands
-./ampl <<EOF
+    # Run ampl with commands
+    ./ampl <<EOF
 shell "amplkey activate --uuid $UUID";
 exit;
 EOF
 
-echo "AMPL has been restarted!"
+    echo "AMPL has been restarted!"
 
-# Navigate back to codesign root directory
-cd ../..
+    # Navigate back to codesign root directory
+    cd ../..
+fi
 
 echo "COMPLETED STEP 4: STREAMHLS SETUP"
 
