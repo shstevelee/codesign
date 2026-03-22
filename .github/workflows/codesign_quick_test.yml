@@ -11,6 +11,12 @@ jobs:
     name: Codesign Preinstalled Quicktest
     runs-on: self-hosted
     steps:
+        - name: Remove old workspace
+          run: |
+            rm -rf *
+            rm -rf .[^.] .??*
+            ls -la
+          
         - name: Check out repository code
           uses: actions/checkout@v4
         - name: Debug-echo
