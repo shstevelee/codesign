@@ -16,7 +16,6 @@ jobs:
             rm -rf *
             rm -rf .[^.] .??*
             ls -la
-          
         - name: Check out repository code
           uses: actions/checkout@v4
         - name: Debug-echo
@@ -26,10 +25,10 @@ jobs:
               ls -la
         - name: Set up preinstalled tool environment
           run: |
-            chmod +x full_env_start.sh || true
             export OPENROAD_PRE_INSTALLED=1
             export SCALEHLS_PRE_INSTALLED=1
             export STREAMHLS_PRE_INSTALLED=1
+            chmod +x full_env_start.sh || true
             ./full_env_start.sh
         - name: Run Codesign Script
           run: |
