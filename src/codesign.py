@@ -113,6 +113,10 @@ class Codesign:
         self.inverse_pass_improvement = self.cfg["args"]["inverse_pass_improvement"]
         self.inverse_pass_lag_factor = 1
 
+        # Preinstalled ScaleHLS path (similar to preinstalled OpenROAD path support)
+        self.preinstalled_scalehls_path = self.cfg["args"].get("preinstalled_scalehls_path") if isinstance(self.cfg.get("args"), dict) else None
+        scalehls_root_dir = self.preinstalled_scalehls_path if self.preinstalled_scalehls_path else "ScaleHLS-HIDA"
+
         self.params_over_iterations = [copy.copy(self.hw.circuit_model.tech_model.base_params.tech_values)]
         self.sensitivities_over_iterations = []
         self.constraint_slack_over_iterations = []
@@ -145,7 +149,8 @@ class Codesign:
                 logger.info(f"loaded last_dsp_count from {self.tmp_dir}/last_dsp_count.yaml: {self.cur_dsp_usage}")
         self.max_rsc_reached = False
 
-        self.config_json_path_scalehls = "ScaleHLS-HIDA/test/Transforms/Directive/config.json"
+        scalehls_root_dir = self.preinstalled_scalehls_path if self.preinstalled_scalehls_path else "ScaleHLS-HIDA"
+        self.config_json_path_scalehls = os.path.join(scalehls_root_dir, "test", "Transforms", "Directive", "config.json")
         self.config_json_path = self.benchmark_setup_dir + "/config.json"
 
     # any arguments specified on CLI will override the default config
@@ -420,13 +425,16 @@ class Codesign:
         cwd = os.getcwd()
         print(f"Running scaleHLS in {cwd}")
 
-        if self.cfg["args"]["pytorch"]:
+        # Use preinstalled ScaleHLS if provided (mirrors OpenROAD preinstalled path logic)
+        scalehls_dir = self.preinstalled_scalehls_path if self.preinstalled_scalehls_path else os.path.join(cwd, "ScaleHLS-HIDA")
+
+        if self.cfg["args"].get("pytorch"):
             logger.info("Running scaleHLS with pytorch for benchmark_name: "+self.benchmark_name)
             cmd = [
                 'bash', '-c',
                 f'''
                 cd {cwd}
-                cd ScaleHLS-HIDA/
+                cd {scalehls_dir}
                 export PATH=$PATH:$PWD/build/bin:$PWD/polygeist/build/bin
                 export PYTHONPATH=$PYTHONPATH:$PWD/build/tools/scalehls/python_packages/scalehls_core
                 source mlir_venv/bin/activate
@@ -443,7 +451,7 @@ class Codesign:
                 'bash', '-c',
                 f'''
                 cd {cwd}
-                cd ScaleHLS-HIDA/
+                cd {scalehls_dir}
                 export PATH=$PATH:$PWD/build/bin:$PWD/polygeist/build/bin
                 export PYTHONPATH=$PYTHONPATH:$PWD/build/tools/scalehls/python_packages/scalehls_core
                 source mlir_venv/bin/activate
@@ -1386,6 +1394,11 @@ if __name__ == "__main__":
         "--preinstalled_openroad_path",
         type=str,
         help="Path to a pre-installed OpenROAD installation. This is primarily useful for CI testing where OpenRoad is pre-installed on the system.",
+    )
+    parser.add_argument(
+        "--preinstalled_scalehls_path",
+        type=str,
+        help="Path to a pre-installed ScaleHLS installation. Useful for CI testing where ScaleHLS is pre-installed on the system.",
     )
     parser.add_argument("--arch_opt_pipeline", type=str, help="architecture optimization pipeline to use")
     parser.add_argument("--streamhls_opt_level", type=str, help="StreamHLS optimization level to use")

@@ -201,6 +201,7 @@ else
     git submodule update --init --recursive openroad_interface/OpenROAD
 
     if  [[ "${GITHUB_ACTIONS:-}" == "true" && "${OPENROAD_PRE_INSTALLED:-0}" == "1" ]]; then
+        PREINSTALLED_OPENROAD_PATH="/scratch/seunghyeok/codesign/openroad_interface/OpenROAD/build/src/openroad"
         echo "OpenROAD executable already exists."
     else
     # check if the openroad executable exists
@@ -248,6 +249,7 @@ echo "COMPLETED STEP 1: OPENROAD INSTALLATION"
 echo "STARTING STEP 2: SCALEHLS SETUP"
 ## we want this to operate outside of conda, so do this first
 if [[ "${SCALEHLS_PRE_INSTALLED:-0}" == "1" ]]; then
+    PREINSTALLED_SCALEHLS_PATH="/scratch/seunghyeok/codesign/ScaleHLS-HIDA"
     echo "Skipping ScaleHLS setup (SCALEHLS_PRE_INSTALLED=1)."
 else
     source "$SETUP_SCRIPTS_FOLDER"/scale_hls_setup.sh $FORCE_FULL # setup scalehls
