@@ -28,6 +28,10 @@ jobs:
             export OPENROAD_PRE_INSTALLED=1
             export SCALEHLS_PRE_INSTALLED=1
             export STREAMHLS_PRE_INSTALLED=1
+            export PREINSTALLED_OPENROAD_PATH="/scratch/seunghyeok/codesign/openroad_interface/OpenROAD/build/src/openroad"
+            export PREINSTALLED_STREAMHLS_PATH="/scratch/seunghyeok/codesign/Stream-HLS/"
+            export PREINSTALLED_SCALEHLS_PATH="/scratch/seunghyeok/codesign/ScaleHLS-HIDA/"
+            python check_env_vars.py
             chmod +x full_env_start.sh || true
             ./full_env_start.sh
         - name: Run Codesign Script
