@@ -117,6 +117,10 @@ class Codesign:
         self.preinstalled_scalehls_path = self.cfg["args"].get("preinstalled_scalehls_path") if isinstance(self.cfg.get("args"), dict) else None
         scalehls_root_dir = self.preinstalled_scalehls_path if self.preinstalled_scalehls_path else "ScaleHLS-HIDA"
 
+        # Preinstalled StreamHLS path
+        self.preinstalled_streamhls_path = self.cfg["args"].get("preinstalled_streamhls_path") if isinstance(self.cfg.get("args"), dict) else None
+        streamhls_root_dir = self.preinstalled_streamhls_path if self.preinstalled_streamhls_path else "Stream-HLS"
+
         self.params_over_iterations = [copy.copy(self.hw.circuit_model.tech_model.base_params.tech_values)]
         self.sensitivities_over_iterations = []
         self.constraint_slack_over_iterations = []
@@ -367,7 +371,7 @@ class Codesign:
             f'''
             cd {cwd}
             source miniconda3/etc/profile.d/conda.sh
-            cd Stream-HLS
+            cd {streamhls_root_dir}
             pwd
             source setup-env.sh
             cd examples
@@ -1399,6 +1403,11 @@ if __name__ == "__main__":
         "--preinstalled_scalehls_path",
         type=str,
         help="Path to a pre-installed ScaleHLS installation. Useful for CI testing where ScaleHLS is pre-installed on the system.",
+    )
+    parser.add_argument(
+        "--preinstalled_streamhls_path",
+        type=str,
+        help="Path to a pre-installed StreamHLS installation. Useful for CI testing where StreamHLS is pre-installed on the system.",
     )
     parser.add_argument("--arch_opt_pipeline", type=str, help="architecture optimization pipeline to use")
     parser.add_argument("--streamhls_opt_level", type=str, help="StreamHLS optimization level to use")

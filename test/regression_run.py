@@ -81,7 +81,8 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 class RegressionRun:
     def __init__(self, cfg, codesign_root_dir, single_config_path=None, test_list_path=None, max_parallelism=4, absolute_paths=False, 
-                 silent_mode=False, github_autotest_mode=False, preinstalled_openroad_path=None, max_job_runtime_mins=DEFAULT_MAX_JOB_RUNTIME_MINS, dsp_sweep=None):
+                 silent_mode=False, github_autotest_mode=False, preinstalled_openroad_path=None, preinstalled_scalehls_path=None, 
+                 preinstalled_streamhls_path=None, max_job_runtime_mins=DEFAULT_MAX_JOB_RUNTIME_MINS, dsp_sweep=None):
         self.cfg = cfg
         self.codesign_root_dir = codesign_root_dir
         self.single_config_path = single_config_path
@@ -90,6 +91,8 @@ class RegressionRun:
         self.absolute_paths = absolute_paths
         self.silent_mode = silent_mode
         self.preinstalled_openroad_path = preinstalled_openroad_path
+        self.preinstalled_scalehls_path = preinstalled_scalehls_path
+        self.preinstalled_streamhls_path = preinstalled_streamhls_path
         self.github_autotest_mode = github_autotest_mode
         self.max_job_runtime_mins = max_job_runtime_mins
         # Format: "start:end:step" e.g., "10:2000:10"
@@ -279,17 +282,35 @@ class RegressionRun:
             openroad_preinstalled_flag = ''
             openroad_preinstalled_path_option = ''
 
+        if self.preinstalled_scalehls_path is not None:
+            scalehls_preinstalled_flag = f'SCALEHLS_PRE_INSTALLED=1 && '
+            scalehls_preinstalled_path_option = f'--preinstalled_scalehls_path {self.preinstalled_scalehls_path} '
+        else:
+            scalehls_preinstalled_flag = ''
+            scalehls_preinstalled_path_option = ''
+
+        if self.preinstalled_streamhls_path is not None:
+            streamhls_preinstalled_flag = f'STREAMHLS_PRE_INSTALLED=1 && '
+            streamhls_preinstalled_path_option = f'--preinstalled_streamhls_path {self.preinstalled_streamhls_path} '
+        else:
+            streamhls_preinstalled_flag = ''
+            streamhls_preinstalled_path_option = ''
+
         
         # start a subprocess that runs codesign with the config file
         cmd = (
             f'bash -c "shopt -s expand_aliases && '
             f'{openroad_preinstalled_flag}'
+            f'{scalehls_preinstalled_flag}'
+            f'{streamhls_preinstalled_flag}'
             f'source full_env_start.sh && '
             f'$(which python) -u -m src.codesign '
             f'--config {config_name} '
             f'--additional_cfg_file {os.path.join(job_results_dir, "config.yaml")} '
             f'--tmp_dir {os.path.join(job_results_dir, "tmp")} '
             f'{openroad_preinstalled_path_option}'
+            f'{scalehls_preinstalled_path_option}'
+            f'{streamhls_preinstalled_path_option}'
             f'-f {os.path.join(job_results_dir, "log")} "'
         )
         # Run in shell mode so it inherits environment vars (PATH, conda env, etc.)
@@ -731,6 +752,18 @@ if __name__ == "__main__":
         )
 
         parser.add_argument(
+            "--preinstalled_scalehls_path",
+            type=str,
+            help="Path to a pre-installed ScaleHLS installation. Useful for CI testing where ScaleHLS is pre-installed on the system.",
+        )
+
+        parser.add_argument(
+            "--preinstalled_streamhls_path",
+            type=str,
+            help="Path to a pre-installed StreamHLS installation. Useful for CI testing where StreamHLS is pre-installed on the system.",
+        )
+
+        parser.add_argument(
             "--max_job_runtime_mins",
             type=int,
             help=f"Maximum allowed runtime for each job in minutes. Default is {DEFAULT_MAX_JOB_RUNTIME_MINS} minutes.",
@@ -759,6 +792,7 @@ if __name__ == "__main__":
         reg_run = RegressionRun(cfg=None, codesign_root_dir=cwd, single_config_path=args.single_config, test_list_path=args.test_list, 
                                 max_parallelism=args.max_parallelism, absolute_paths=args.absolute_paths, silent_mode=args.quiet_mode, 
                                 github_autotest_mode=args.github_autotest_mode, preinstalled_openroad_path=args.preinstalled_openroad_path, 
+                                preinstalled_scalehls_path=args.preinstalled_scalehls_path, preinstalled_streamhls_path=args.preinstalled_streamhls_path,
                                 max_job_runtime_mins=args.max_job_runtime_mins, dsp_sweep=args.dsp_sweep)
 
         regression_instance = reg_run
