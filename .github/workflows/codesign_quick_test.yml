@@ -1,0 +1,15 @@
+name: Codesign Quick Testing Workflow
+
+on:
+    workflow_dispatch:
+
+jobs:
+    test:
+        name: Codesign Quick Test
+        runs-on: bluey-seunghyeok
+        steps:
+            - name: Print Hello World
+              run:  |
+                echo "Hello World"
+            - name: Confirm End
+              run: echo "Quick Test Done"
