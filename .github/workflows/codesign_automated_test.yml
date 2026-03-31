@@ -9,6 +9,7 @@ jobs:
   test:
     name: Codesign-Automated-Test
     runs-on: bluey-CMU
+    timeout-minutes: 1000 
     steps:
       - name: Remove old workspace
         run: |
