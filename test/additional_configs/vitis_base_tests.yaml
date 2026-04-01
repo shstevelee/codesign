@@ -168,7 +168,7 @@ vitis_multihead_self_attention_test:
 
 
 # Stream HLS tests
-vitis_streamhls_gemm_test:
+vitis_base_streamhls_gemm_test:
   base_cfg: vitis_test
   args:
     benchmark: gemm
@@ -176,7 +176,7 @@ vitis_streamhls_gemm_test:
     pytorch: True  
     min_dsp: 13
 
-vitis_streamhls_gesummv_test:
+vitis_base_streamhls_gesummv_test:
   base_cfg: vitis_test
   args:
     benchmark: gesummv
@@ -184,7 +184,7 @@ vitis_streamhls_gesummv_test:
     pytorch: True
     min_dsp: 18
 
-vitis_streamhls_2mm_test:
+vitis_base_streamhls_2mm_test:
   base_cfg: vitis_test
   args:
     benchmark: k2mm
@@ -192,7 +192,7 @@ vitis_streamhls_2mm_test:
     pytorch: True
     min_dsp: 18
 
-vitis_streamhls_3mm_test:
+vitis_base_streamhls_3mm_test:
   base_cfg: vitis_test
   args:
     benchmark: k3mm
@@ -200,7 +200,7 @@ vitis_streamhls_3mm_test:
     pytorch: True
     min_dsp: 15
 
-vitis_streamhls_atax_test:
+vitis_base_streamhls_atax_test:
   base_cfg: vitis_test
   args:
     benchmark: atax
@@ -209,7 +209,7 @@ vitis_streamhls_atax_test:
     arch_opt_pipeline: streamhls
     min_dsp: 10
 
-vitis_streamhls_bicg_test:
+vitis_base_streamhls_bicg_test:
   base_cfg: vitis_test
   args:
     benchmark: bicg
@@ -217,7 +217,7 @@ vitis_streamhls_bicg_test:
     pytorch: True
     min_dsp: 10
 
-vitis_streamhls_mvt_test:
+vitis_base_streamhls_mvt_test:
   base_cfg: vitis_test
   args:
     benchmark: mvt
@@ -225,7 +225,7 @@ vitis_streamhls_mvt_test:
     pytorch: True
     min_dsp: 10
 
-vitis_streamhls_attention_test:
+vitis_base_streamhls_attention_test:
   base_cfg: vitis_test
   args:
     benchmark: MultiHeadSelfAttention
@@ -233,7 +233,7 @@ vitis_streamhls_attention_test:
     pytorch: True
     min_dsp: 40
 
-vitis_streamhls_aes_test: # not working yet
+vitis_base_streamhls_aes_test: # not working yet
   base_cfg: vitis_test
   args:
     benchmark: aes
@@ -241,7 +241,7 @@ vitis_streamhls_aes_test: # not working yet
     pytorch: True
     min_dsp: 18
 
-vitis_streamhls_inference_test: # not working yet
+vitis_base_streamhls_inference_test: # not working yet
   base_cfg: vitis_test
   args:
     benchmark: Inference
@@ -249,7 +249,7 @@ vitis_streamhls_inference_test: # not working yet
     pytorch: True
     min_dsp: 100
 
-vitis_streamhls_transformer_test: # not working yet
+vitis_base_streamhls_transformer_test: # not working yet
   base_cfg: vitis_test
   args:
     benchmark: Transformer
