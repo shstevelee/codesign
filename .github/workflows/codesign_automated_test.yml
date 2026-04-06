@@ -1,5 +1,8 @@
 name: Codesing Automated Test Workflow.
-
+env:
+    AMPL_UUID: ${{ secrets.UUID }}
+    OPENROAD_PRE_INSTALLED: 1
+    
 on:
   pull_request:
     branches: master
@@ -28,8 +31,8 @@ jobs:
         
       - name: Set up bash and run environment setup
         run: |
-          chmod +x full_env_start.sh || true
-          OPENROAD_PRE_INSTALLED=1 ./full_env_start.sh <<< "${{ secrets.UUID }}"
+          chmod +x full_env_start.sh || true <<< "${{ secrets.UUID }}"
+          OPENROAD_PRE_INSTALLED=1 ./full_env_start.sh
 
       - name: Run Codesign Script
         run: |

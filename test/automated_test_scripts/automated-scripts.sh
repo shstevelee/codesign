@@ -8,7 +8,7 @@ set -eo pipefail
 
 shopt -s expand_aliases
 
-OPENROAD_PRE_INSTALLED=1 source full_env_start.sh
+source full_env_start.sh
 
 # Run regression and propagate its exit code directly.
 # Use 'set +e' so the script can capture the exit code instead of exiting immediately.

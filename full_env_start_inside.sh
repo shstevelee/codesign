@@ -89,8 +89,17 @@ if [[ $FORCE_FULL -eq 1 ]]; then
     if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
         echo "Using $TARGET_CORES cores for this build."
     fi
-    echo -n "Please enter your AMPL UUID license: " > /dev/tty
-    read ampl_uuid < /dev/tty
+
+    # 1. Check if the environment variable is already set
+    if [ -z "$AMPL_UUID" ]; then
+        # 2. Check if we are in an interactive terminal or a pipe
+        # If there's no TTY (like in GitHub Actions), we read from stdin
+        echo -n "Please enter your AMPL UUID license: "
+        read ampl_uuid
+    else
+        # 3. If the env var exists, use it!
+        ampl_uuid="$AMPL_UUID"
+    fi
     
     # Save the AMPL UUID to the file
     echo "$ampl_uuid" > "$AMPL_UUID_FILE"
