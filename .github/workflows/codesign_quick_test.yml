@@ -4,6 +4,7 @@ env:
   PREINSTALLED_OPENROAD_PATH: "/scratch/openroad_executable/openroad"
   SCALEHLS_PREINSTALLED: 1
   STREAMHLS_PREINSTALLED: 1
+  PREINSTALLED_STREAMHLS_PATH: "scratch/seunghyeok/Stream-HLS"
 
 
 on:

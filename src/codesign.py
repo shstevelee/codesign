@@ -337,46 +337,61 @@ class Codesign:
         """
         start_time = time.time()
         logger.info(f"Running StreamHLS with save_dir: {save_dir}")
-        ## get CWD
+        ## get Current Working Directory (CWD)
         cwd = os.getcwd()
         print(f"Running StreamHLS in {cwd}")
 
+        # logic for number of dsp
         if not setup:
             if self.last_dsp_count_set and iteration_count == 0:
+                # initial DSP usage
                 self.cur_dsp_usage = self.cur_dsp_usage
                 self.last_dsp_count_set = False
+
             elif self.cfg["args"]["fixed_area_increase_pattern"] and iteration_count > 0:
+                # Try increasing DSP usage
                 self.cur_dsp_usage = self.cur_dsp_usage * 10
+
             else: 
-                self.cur_dsp_usage = int(self.cfg["args"]["area"] / (sim_util.xreplace_safe(self.hw.circuit_model.tech_model.param_db["A_gate"], self.hw.circuit_model.tech_model.base_params.tech_values) * self.dsp_multiplier))
+                tech_vals = self.hw.circuit_model.tech_model.base_params.tech_values
+                a_gate = sim_util.xreplace_safe(self.hw.circuit_model.tech_model.param_db["A_gate"], tech_vals)
+
+                self.cur_dsp_usage = int(self.cfg["args"]["area"] / (a_gate * self.dsp_multiplier))
+
                 self.cur_dsp_usage = max(self.cur_dsp_usage, self.cfg["args"]["min_dsp"])
             tilelimit = 1
+
         else:
             self.cur_dsp_usage = 10000
             tilelimit = 1
 
+        # Setting Various Paths
+        # StreamHLS path
+        streamhls_root = self.cfg["args"].get("preinstalled_streamhls_path")
+        if not streamhls_root or streamhls_root == 'none':
+            # Fallback to local subdirectory if no preinstalled path is provided
+            streamhls_root = os.path.join(self.codesign_root_dir, "Stream-HLS")
+        
+        # Path to save run logs
         save_path = os.path.join(os.path.dirname(__file__), "..", save_dir)
+
+
         streamhls_opt_level = int(self.cfg["args"].get("streamhls_opt_level", 5))
         cmd = [
-            'bash', '-c',
-            f'''
-            cd {cwd}
-            source miniconda3/etc/profile.d/conda.sh
-            cd Stream-HLS
-            pwd
-            source setup-env.sh
-            cd examples
-            python run_streamhls.py -b {save_path} -d {save_path} -k {self.benchmark_name} -O {streamhls_opt_level} --dsps {self.cur_dsp_usage} --timelimit {2} --tilelimit {tilelimit} --bufferize 1
-            '''
+            python_bin, "run_streamhls.py",
+            "-b", save_path, "-d", save_path, "-k", self.benchmark_name,
+            "-O", str(streamhls_opt_level), "--dsps", str(self.cur_dsp_usage),
+            "--timelimit", "2", "--tilelimit", str(tilelimit), "--bufferize", "1"
         ]
 
         log_path = f"{save_path}/streamhls_out.log"
-        with open(log_path, "w") as outfile:
+        with open(f"{save_path}/streamhls_out.log", "w") as outfile:
             p = subprocess.Popen(
-                cmd,
-                stdout=outfile,
-                stderr=subprocess.STDOUT,
-                env={}  # clean environment
+                cmd, 
+                stdout=outfile, 
+                stderr=subprocess.STDOUT, 
+                cwd=streamhls_dir, 
+                env=env
             )
             p.wait()
         with open(log_path, "r") as f:
