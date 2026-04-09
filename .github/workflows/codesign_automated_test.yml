@@ -1,12 +1,16 @@
 name: Codesing Automated Test Workflow.
-
+env:
+    AMPL_UUID: ${{ secrets.UUID }}
+    OPENROAD_PRE_INSTALLED: 1
+    
 on:
   workflow_dispatch:
 
 jobs:
   test:
     name: Codesign-Automated-Test
-    runs-on: self-hosted
+    runs-on: bluey-CMU
+    timeout-minutes: 1000
     steps:
       - name: Remove old workspace
         run: |
@@ -15,7 +19,7 @@ jobs:
           ls -la
           
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Debug-echo
         run: |
@@ -25,7 +29,7 @@ jobs:
         
       - name: Set up bash and run environment setup
         run: |
-          chmod +x full_env_start.sh || true
+          chmod +x full_env_start.sh || true <<< "${{ secrets.UUID }}"
           OPENROAD_PRE_INSTALLED=1 ./full_env_start.sh
 
       - name: Run Codesign Script

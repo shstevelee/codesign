@@ -1,5 +1,7 @@
 ## This file specifies a list of autotests that will be run. These files must be in the same directory.
 - forwardpass_small_tests_scalehls.yaml
 - forwardpass_small_tests_streamhls.yaml
+
+## More tests covering forward pass
 - ../forwardpass_stream_passing/vitis_stream_passing.yaml
 - ../pipeline_comparison/pipeline_comparison.yaml

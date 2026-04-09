@@ -48,6 +48,9 @@ tools/
 
 setup_scripts/university_name.txt
 
+# GitHub Actions Runner folder
+actions-runner/
+
 ## ignores all hidden files except those needed for git.
 .*
 !.gitignore

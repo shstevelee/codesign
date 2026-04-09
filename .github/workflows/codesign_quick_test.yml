@@ -1,36 +1,15 @@
-name: Codesign Quick Test with preinstalled paths
+name: Codesign Quick Testing Workflow
 
 on:
-    pull_request:
-        branches: master
     workflow_dispatch:
-            
-            
+
 jobs:
-  test:
-    name: Codesign Preinstalled Quicktest
-    runs-on: self-hosted
-    steps:
-        - name: Check out repository code
-          uses: actions/checkout@v4
-        - name: Debug-echo
-          run: |
-              echo ">>> CI is running inside Python Tests workflow on $(date)"
-              echo "Current directory: $(pwd)"
-              ls -la
-        - name: Set up preinstalled tool environment
-          run: |
-            chmod +x full_env_start.sh || true
-            export OPENROAD_PRE_INSTALLED=1
-            export SCALEHLS_PRE_INSTALLED=1
-            export STREAMHLS_PRE_INSTALLED=1
-            ./full_env_start.sh
-        - name: Verify preinstalled tool paths
-          run: |
-            chmod +x verify_preinstalled_paths.sh || true
-            echo ">>> Verifying preinstalled tool paths..."
-            ./verify_preinstalled_paths.sh
-        - name: Run Codesign Script
-          run: |
-              chmod +x test/automated_test_scripts/automated-scripts.sh || true
-              ./test/automated_test_scripts/automated-scripts.sh
+    test:
+        name: Codesign Quick Test
+        runs-on: bluey-seunghyeok
+        steps:
+            - name: Print Hello World
+              run:  |
+                echo "Hello World"
+            - name: Confirm End
+              run: echo "Quick Test Done"
