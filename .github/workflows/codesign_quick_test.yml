@@ -1,4 +1,7 @@
 name: Codesign Quick Testing Workflow
+env:
+  OPENROAD_PREINSTALLED: 1
+
 
 on:
     workflow_dispatch:
@@ -6,10 +9,16 @@ on:
 jobs:
     test:
         name: Codesign Quick Test
-        runs-on: bluey-seunghyeok
+        runs-on: bluey-quicktester
         steps:
-            - name: Print Hello World
-              run:  |
-                echo "Hello World"
+            - name: Check out repository
+              run: actions/checkout@v5
+
+            - name: Start Env
+              run: source ./full_env_start.sh
+
+            - name: Run regressions
+              run: /test/automated_test_scripts/automated-scripts.sh
+
             - name: Confirm End
               run: echo "Quick Test Done"

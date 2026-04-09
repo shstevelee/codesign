@@ -5,11 +5,21 @@ env:
     
 on:
   workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual run'
+        required: false
+        default: 'Manual testing'
+
+  pull_request:
+    branches:
+      - master
+      - main
 
 jobs:
   test:
     name: Codesign-Automated-Test
-    runs-on: bluey-CMU
+    runs-on: self-hosted
     timeout-minutes: 1000
     steps:
       - name: Remove old workspace
@@ -32,7 +42,7 @@ jobs:
           chmod +x full_env_start.sh || true <<< "${{ secrets.UUID }}"
           OPENROAD_PRE_INSTALLED=1 ./full_env_start.sh
 
-      - name: Run Codesign Script
+      - name: Run Codesign Script (Automated Testing)
         run: |
           chmod +x test/automated_test_scripts/automated-scripts.sh || true
           ./test/automated_test_scripts/automated-scripts.sh
