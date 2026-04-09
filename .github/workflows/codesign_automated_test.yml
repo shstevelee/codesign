@@ -15,7 +15,7 @@ on:
 jobs:
   test:
     name: Codesign-Automated-Test
-    runs-on: [self-hosted, bluey-full-rebuild]
+    runs-on: self-hosted
     timeout-minutes: 1000
     steps:
       - name: Remove old workspace
