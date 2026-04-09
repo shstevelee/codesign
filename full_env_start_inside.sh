@@ -145,6 +145,8 @@ else
     echo "SUDO permissions will be refreshed for up to 8 hours during this build."
 fi
 echo "Thank you for entering your sudo password if prompted."
+
+
 ################## PARSE UNIVERSITY ARGUMENT ##################
 
 host=$(hostname)
@@ -172,7 +174,6 @@ fi
 
 ## print the university name to a file in the setup scripts folder
 echo "$UNIVERSITY" > "$SETUP_SCRIPTS_FOLDER"/university_name.txt
-
 
 printf '>>> SCRIPT START %s\n' "$(date)"
 printf 'Current directory: %s\n' "$(pwd)"
@@ -209,7 +210,7 @@ if [[ $SKIP_OPENROAD -eq 1 ]]; then
 else
     git submodule update --init --recursive openroad_interface/OpenROAD
 
-    if  [[ ("${GITHUB_ACTIONS:-}" == "true" && "${OPENROAD_PRE_INSTALLED:-0}" == "1" && -f "openroad_interface/OpenROAD/build/src/openroad") || ("${OPENROAD_PRE_INSTALLED:-0}" == "1" && -f "openroad_interface/OpenROAD/build/src/openroad") ]]; then
+    if  [[ "${OPENROAD_PRE_INSTALLED:-0}" == "1" && -f "openroad_interface/OpenROAD/build/src/openroad" ]]; then
         echo "OpenROAD executable already exists."
     else
     # check if the openroad executable exists

@@ -1,24 +1,43 @@
 name: Codesign Quick Testing Workflow
 env:
   OPENROAD_PREINSTALLED: 1
+  PREINSTALLED_OPENROAD_PATH: "/scratch/openroad_executable/openroad"
+  SCALEHLS_PREINSTALLED: 1
+  STREAMHLS_PREINSTALLED: 1
 
 
 on:
-    workflow_dispatch:
+  workflow_dispatch:
 
+  pull_request:
+    branches:
+      - master
+      - main
 jobs:
     test:
         name: Codesign Quick Test
         runs-on: bluey-quicktester
         steps:
-            - name: Check out repository
-              run: actions/checkout@v5
+          - name: Remove old workspace
+            run: |
+              rm -rf *
+              rm -rf .[^.] .??*
+              ls -la
 
-            - name: Start Env
-              run: source ./full_env_start.sh
+          - name: Debug-echo
+            run: |
+              echo ">>> CI is running inside Python Tests workflow on $(date)"
+              echo "Current directory: $(pwd)"
+              ls -la
 
-            - name: Run regressions
-              run: /test/automated_test_scripts/automated-scripts.sh
+          - name: Check out repository
+            run: actions/checkout@v5
 
-            - name: Confirm End
-              run: echo "Quick Test Done"
+          - name: Start Env
+            run: ./full_env_start.sh
+
+          - name: Run regressions
+            run: /test/automated_test_scripts/automated-scripts.sh
+
+          - name: Confirm End
+            run: echo "Quick Test Done"

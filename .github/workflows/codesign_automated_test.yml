@@ -2,6 +2,7 @@ name: Codesing Automated Test Workflow.
 env:
     AMPL_UUID: ${{ secrets.UUID }}
     OPENROAD_PRE_INSTALLED: 1
+    PREINSTALLED_OPENROAD_PATH: "/scratch/openroad_executable/openroad"
     
 on:
   workflow_dispatch:
@@ -11,15 +12,10 @@ on:
         required: false
         default: 'Manual testing'
 
-  pull_request:
-    branches:
-      - master
-      - main
-
 jobs:
   test:
     name: Codesign-Automated-Test
-    runs-on: self-hosted
+    runs-on: [self-hosted, bluey-full-rebuild]
     timeout-minutes: 1000
     steps:
       - name: Remove old workspace
@@ -40,7 +36,7 @@ jobs:
       - name: Set up bash and run environment setup
         run: |
           chmod +x full_env_start.sh || true <<< "${{ secrets.UUID }}"
-          OPENROAD_PRE_INSTALLED=1 ./full_env_start.sh
+          ./full_env_start.sh
 
       - name: Run Codesign Script (Automated Testing)
         run: |
