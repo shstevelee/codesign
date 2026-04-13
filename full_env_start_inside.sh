@@ -104,7 +104,7 @@ detect_scalehls() {
 
 detect_streamhls() {
     if [[ -n "${PREINSTALLED_STREAMHLS_PATH:-}" ]]; then
-        if [[ -d "$PREINSTALLED_STREAMHLS_PATH" && -f "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-opt" && -x "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-opt" && -f "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-translate" && -x "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-translate" ]]; then
+        if [[ -d "$PREINSTALLED_STREAMHLS_PATH" && -f "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-opt" && -x "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-opt" && -f "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-translate" && -x "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-translate" ]]; then
             echo "$PREINSTALLED_STREAMHLS_PATH"
         fi
     fi
