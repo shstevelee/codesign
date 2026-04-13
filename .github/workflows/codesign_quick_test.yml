@@ -17,7 +17,7 @@ on:
 jobs:
     test:
         name: Codesign Quick Test
-        runs-on: bluey-quicktester
+        runs-on: self-hosted
         steps:
           - name: Remove old workspace
             run: |
