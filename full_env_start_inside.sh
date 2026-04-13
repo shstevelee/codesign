@@ -91,7 +91,28 @@ detect_openroad() {
 
 FOUND_OR_PATH=$(detect_openroad)
 
-################## SUDO PASSWORD PROMPT ##################
+################## SCALEHLS DETECTION LOGIC ##################
+detect_scalehls() {
+    if [[ -n "${PREINSTALLED_SCALEHLS_PATH:-}" ]]; then
+        if [[ -d "$PREINSTALLED_SCALEHLS_PATH" && -f "$PREINSTALLED_SCALEHLS_PATH/build/bin/scalehls-opt" && -x "$PREINSTALLED_SCALEHLS_PATH/build/bin/scalehls-opt" && -f "$PREINSTALLED_SCALEHLS_PATH/build/bin/scalehls-translate" && -x "$PREINSTALLED_SCALEHLS_PATH/build/bin/scalehls-translate" && -f "$PREINSTALLED_SCALEHLS_PATH/scalehls_env.sh" ]]; then
+            echo "$PREINSTALLED_SCALEHLS_PATH"
+        fi
+    fi
+}
+
+################# STREAMHLS DETECTION LOGIC #################
+
+detect_streamhls() {
+    if [[ -n "${PREINSTALLED_STREAMHLS_PATH:-}" ]]; then
+        if [[ -d "$PREINSTALLED_STREAMHLS_PATH" && -f "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-opt" && -x "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-opt" && -f "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-translate" && -x "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-translate" ]]; then
+            echo "$PREINSTALLED_STREAMHLS_PATH"
+        fi
+    fi
+}
+
+FOUND_SCALEHLS_PATH=$(detect_scalehls)
+FOUND_STREAMHLS_PATH=$(detect_streamhls)
+
 
 SUDO_KEEPALIVE_PID=""
 stop_sudo_keepalive() {
@@ -199,8 +220,8 @@ echo "COMPLETED STEP 1: OPENROAD INSTALLATION"
 
 ################ SET UP SCALEHLS ##################
 echo "STARTING STEP 2: SCALEHLS SETUP"
-if [[ "${SCALEHLS_PRE_INSTALLED:-0}" == "1" && -d "ScaleHLS-HIDA/build/tools/scalehls/python_packages/scalehls_core" ]]; then
-    echo "Skipping ScaleHLS setup."
+if [[ -n "$FOUND_SCALEHLS_PATH" ]] || [[ "${SCALEHLS_PRE_INSTALLED:-0}" == "1" && -d "ScaleHLS-HIDA/build/tools/scalehls/python_packages/scalehls_core" ]]; then
+    echo "Skipping ScaleHLS setup (preinstalled at ${FOUND_SCALEHLS_PATH:-'local'})."
 else
     source "$SETUP_SCRIPTS_FOLDER/scale_hls_setup.sh" "$FORCE_FULL"
 fi
@@ -229,8 +250,8 @@ conda activate codesign
 
 ################ SET UP STREAMHLS ##################
 echo "STARTING STEP 4: STREAMHLS SETUP"
-if [[ "${STREAMHLS_PRE_INSTALLED:-0}" == "1" ]] && conda env list | grep -q streamhls; then
-    echo "Skipping StreamHLS setup."
+if [[ -n "$FOUND_STREAMHLS_PATH" ]] || [[ "${STREAMHLS_PRE_INSTALLED:-0}" == "1" ]] && conda env list | grep -q streamhls; then
+    echo "Skipping StreamHLS setup (preinstalled at ${FOUND_STREAMHLS_PATH:-'local'})."
 else
     bash "$SETUP_SCRIPTS_FOLDER/streamhls_setup.sh" "$FORCE_FULL"
     UUID=$(cat ampl_uuid.txt)
