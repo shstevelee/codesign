@@ -35,11 +35,19 @@ jobs:
           - name: Check out repository
             uses: actions/checkout@v5
 
+          - name: Debug-echo
+            run: |
+              echo ">>> CI is running inside Python Tests workflow on $(date)"
+              echo "Current directory: $(pwd)"
+              ls -la
+
           - name: Start Env
             run: ./full_env_start.sh
 
           - name: Run regressions
-            run: /test/automated_test_scripts/automated-scripts.sh
+            run: |
+              chmod +x test/automated_test_scripts/automated-scripts.sh || true
+              ./test/automated_test_scripts/automated-scripts.sh
 
           - name: Confirm End
             run: echo "Quick Test Done"
