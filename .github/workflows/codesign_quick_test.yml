@@ -32,7 +32,7 @@ jobs:
               ls -la
 
           - name: Check out repository
-            run: actions/checkout@v5
+            uses: actions/checkout@v5
 
           - name: Start Env
             run: ./full_env_start.sh
