@@ -734,20 +734,26 @@ if __name__ == "__main__":
 
         parser.add_argument(
             "--preinstalled_openroad_path",
+            nargs='?',
+            const='',
             type=str,
-            help="Path to a pre-installed OpenROAD installation. This is primarily useful for CI testing where OpenROAD is pre-installed on the system.",
+            help="Optional path to a pre-installed OpenROAD installation. If the flag is passed without a value, the local OpenROAD build will be used by default.",
         )
 
         parser.add_argument(
             "--preinstalled_scalehls_path",
+            nargs='?',
+            const='',
             type=str,
-            help="Path to a pre-installed ScaleHLS installation directory. This is primarily useful for CI testing where ScaleHLS is pre-installed on the system.",
+            help="Optional path to a pre-installed ScaleHLS installation directory. If the flag is passed without a value, the local ScaleHLS build will be used by default.",
         )
 
         parser.add_argument(
             "--preinstalled_streamhls_path",
+            nargs='?',
+            const='',
             type=str,
-            help="Path to a pre-installed StreamHLS installation directory. This is primarily useful for CI testing where StreamHLS is pre-installed on the system.",
+            help="Optional path to a pre-installed StreamHLS installation directory. If the flag is passed without a value, the local StreamHLS build will be used by default.",
         )
 
         parser.add_argument(
