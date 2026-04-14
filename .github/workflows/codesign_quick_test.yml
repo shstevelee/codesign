@@ -6,6 +6,7 @@ env:
   PREINSTALLED_SCALEHLS_PATH: "/scratch/seunghyeok/codesign/ScaleHLS-HIDA"
   STREAMHLS_PREINSTALLED: 1
   PREINSTALLED_STREAMHLS_PATH: "/scratch/seunghyeok/Stream-HLS"
+  LD_LIBRARY_PATH: "/scratch/seunghyeok/Stream-HLS/ampl.linux-intel64"
 
 
 on:

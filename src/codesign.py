@@ -385,6 +385,9 @@ class Codesign:
         cwd = os.getcwd()
         print(f"Running StreamHLS in {cwd}")
 
+        if 'python_bin' not in locals() and 'python_bin' not in globals():
+            python_bin = "python3"
+
         # logic for number of dsp
         if not setup:
             if self.last_dsp_count_set and iteration_count == 0:
