@@ -435,7 +435,7 @@ class Codesign:
                 stdout=outfile, 
                 stderr=subprocess.STDOUT, 
                 cwd=streamhls_dir, 
-                env=env
+                env=os.environ.copy()
             )
             p.wait()
         with open(log_path, "r") as f:
