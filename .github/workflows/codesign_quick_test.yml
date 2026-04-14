@@ -53,7 +53,7 @@ jobs:
           - name: Update PATH and PYTHONPATH for StreamHLS
             run: |
               # Add StreamHLS binaries to PATH
-              echo "${{ env.PREINSTALLED_STREAMHLS_PATH }}/bin" >> $GITHUB_PATH
+              echo "${{ env.PREINSTALLED_STREAMHLS_PATH }}/build/bin" >> $GITHUB_PATH
               
               # Add StreamHLS to PYTHONPATH if needed
               echo "PYTHONPATH=$PYTHONPATH:${{ env.PREINSTALLED_STREAMHLS_PATH }}" >> $GITHUB_ENV
