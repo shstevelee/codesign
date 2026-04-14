@@ -41,6 +41,15 @@ jobs:
               echo "Current directory: $(pwd)"
               ls -la
 
+          - name: Update PATH and PYTHONPATH for ScaleHLS
+            run: |
+              # Add the ScaleHLS and Polygeist binaries to the system PATH
+              echo "${{ env.PREINSTALLED_SCALEHLS_PATH }}/build/bin" >> $GITHUB_PATH
+              echo "${{ env.PREINSTALLED_SCALEHLS_PATH }}/polygeist/build/bin" >> $GITHUB_PATH
+              
+              # Add the ScaleHLS python packages to PYTHONPATH for the runner
+              echo "PYTHONPATH=$PYTHONPATH:${{ env.PREINSTALLED_SCALEHLS_PATH }}/build/tools/scalehls/python_packages/scalehls_core" >> $GITHUB_ENV
+
           - name: Start Env
             run: ./full_env_start.sh
 
