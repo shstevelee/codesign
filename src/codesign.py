@@ -532,7 +532,7 @@ class Codesign:
                 cmd,
                 stdout=outfile,
                 stderr=subprocess.STDOUT,
-                env={}  # clean environment
+                env=os.environ.copy() # attempt to fix preinstall detection
             )
             p.wait()
         with open(f"{self.tmp_dir}/scalehls_out.log", "r") as f:
