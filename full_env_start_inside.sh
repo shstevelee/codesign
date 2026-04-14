@@ -104,8 +104,12 @@ detect_scalehls() {
 
 detect_streamhls() {
     if [[ -n "${PREINSTALLED_STREAMHLS_PATH:-}" ]]; then
-        if [[ -d "$PREINSTALLED_STREAMHLS_PATH" && -f "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-opt" && -x "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-opt" && -f "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-translate" && -x "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-translate" ]]; then
-            echo "$PREINSTALLED_STREAMHLS_PATH"
+        if [[ -d "$PREINSTALLED_STREAMHLS_PATH" ]]; then
+            if [[ -f "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-opt" && -x "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-opt" && -f "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-translate" && -x "$PREINSTALLED_STREAMHLS_PATH/build/bin/streamhls-translate" ]]; then
+                echo "$PREINSTALLED_STREAMHLS_PATH"
+            elif [[ -f "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-opt" && -x "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-opt" && -f "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-translate" && -x "$PREINSTALLED_STREAMHLS_PATH/bin/streamhls-translate" ]]; then
+                echo "$PREINSTALLED_STREAMHLS_PATH"
+            fi
         fi
     fi
 }
@@ -250,7 +254,7 @@ conda activate codesign
 
 ################ SET UP STREAMHLS ##################
 echo "STARTING STEP 4: STREAMHLS SETUP"
-if [[ -n "$FOUND_STREAMHLS_PATH" ]] || [[ "${STREAMHLS_PRE_INSTALLED:-0}" == "1" ]] && conda env list | grep -q streamhls; then
+if [[ -n "$FOUND_STREAMHLS_PATH" ]] || { [[ "${STREAMHLS_PRE_INSTALLED:-0}" == "1" ]] && conda env list | grep -q streamhls; }; then
     echo "Skipping StreamHLS setup (preinstalled at ${FOUND_STREAMHLS_PATH:-'local'})."
 else
     bash "$SETUP_SCRIPTS_FOLDER/streamhls_setup.sh" "$FORCE_FULL"
