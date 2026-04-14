@@ -329,6 +329,50 @@ class Codesign:
         with open(self.config_json_path, "w") as f:
             json.dump(config, f)
 
+    def get_tool_path(self, tool_name):
+        """
+        Returns the full path to a tool (scalehls-opt, scalehls-translate, streamhls-opt, streamhls-translate).
+        Prefers preinstalled paths, falls back to local paths or PATH.
+        
+        Args:
+            tool_name: Name of the tool ('scalehls-opt', 'scalehls-translate', 'streamhls-opt', 'streamhls-translate')
+        
+        Returns:
+            Full path to the tool executable
+        """
+        if tool_name in ['scalehls-opt', 'scalehls-translate']:
+            preinstalled_path = self.cfg["args"].get("preinstalled_scalehls_path")
+            if preinstalled_path and preinstalled_path != 'none':
+                # Try build/bin first, then bin
+                full_path = os.path.join(preinstalled_path, "build/bin", tool_name)
+                if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                    return full_path
+                full_path = os.path.join(preinstalled_path, "bin", tool_name)
+                if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                    return full_path
+            # Fallback to local path
+            local_path = os.path.join(self.codesign_root_dir, "ScaleHLS-HIDA/build/bin", tool_name)
+            if os.path.isfile(local_path) and os.access(local_path, os.X_OK):
+                return local_path
+        
+        elif tool_name in ['streamhls-opt', 'streamhls-translate']:
+            preinstalled_path = self.cfg["args"].get("preinstalled_streamhls_path")
+            if preinstalled_path and preinstalled_path != 'none':
+                # Try build/bin first, then bin
+                full_path = os.path.join(preinstalled_path, "build/bin", tool_name)
+                if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                    return full_path
+                full_path = os.path.join(preinstalled_path, "bin", tool_name)
+                if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+                    return full_path
+            # Fallback to local path
+            local_path = os.path.join(self.codesign_root_dir, "Stream-HLS/build/bin", tool_name)
+            if os.path.isfile(local_path) and os.access(local_path, os.X_OK):
+                return local_path
+        
+        # If no preinstalled or local path found, return tool name (assume it's in PATH)
+        return tool_name
+
     def run_streamhls(self, save_dir, setup=False, iteration_count=0):
         """
         Runs StreamHLS synthesis tool in a different environment with modified PATH and PYTHONPATH.
@@ -435,6 +479,8 @@ class Codesign:
         cwd = os.getcwd()
         print(f"Running scaleHLS in {cwd}")
 
+        scalehls_translate_path = self.get_tool_path("scalehls-translate")
+
         if self.cfg["args"]["pytorch"]:
             logger.info("Running scaleHLS with pytorch for benchmark_name: "+self.benchmark_name)
             cmd = [
@@ -447,7 +493,7 @@ class Codesign:
                 source mlir_venv/bin/activate
                 cd {os.path.join(os.path.dirname(__file__), "..", save_dir)}
                 python3 {self.benchmark_name}.py > {self.benchmark_name}.mlir 
-                {opt_cmd} | scalehls-translate -scalehls-emit-hlscpp -emit-vitis-directives > {os.path.join(os.path.dirname(__file__), "..", save_dir)}/{self.benchmark_name}.cpp
+                {opt_cmd} | {scalehls_translate_path} -scalehls-emit-hlscpp -emit-vitis-directives > {os.path.join(os.path.dirname(__file__), "..", save_dir)}/{self.benchmark_name}.cpp
                 deactivate
                 pwd
                 '''
@@ -475,7 +521,7 @@ class Codesign:
                                                 -I/usr/local/include \
                                                 -resource-dir $(clang -print-resource-dir) \
                                                 > {self.benchmark_name}.mlir
-                {opt_cmd} | scalehls-translate -scalehls-emit-hlscpp > {os.path.join(os.path.dirname(__file__), "..", save_dir)}/{self.benchmark_name}.cpp
+                {opt_cmd} | {scalehls_translate_path} -scalehls-emit-hlscpp > {os.path.join(os.path.dirname(__file__), "..", save_dir)}/{self.benchmark_name}.cpp
                 deactivate
                 pwd
                 '''
@@ -693,7 +739,8 @@ class Codesign:
         if self.cfg["args"]["arch_opt_pipeline"] == "scalehls":
             self.set_resource_constraint_scalehls(unlimited=setup)
             if setup:
-                opt_cmd = f'''scalehls-opt {self.benchmark_name}.mlir -{self.scalehls_pipeline}=\"top-func={self.vitis_top_function} target-spec={os.path.join(os.path.dirname(__file__), "..", self.config_json_path)}\"'''
+                scalehls_opt_path = self.get_tool_path("scalehls-opt")
+                opt_cmd = f'''{scalehls_opt_path} {self.benchmark_name}.mlir -{self.scalehls_pipeline}=\"top-func={self.vitis_top_function} target-spec={os.path.join(os.path.dirname(__file__), "..", self.config_json_path)}\"'''
                 mlir_idx = 0
             else:
                 mlir_file, mlir_idx = self.parse_design_space_for_mlir(os.path.join(os.path.dirname(__file__), "..", f"{self.tmp_dir}/benchmark_setup/function_hier_output"))
