@@ -426,6 +426,7 @@ class Codesign:
         streamhls_opt_level = int(self.cfg["args"].get("streamhls_opt_level", 5))
         cmd = [
             'bash', '-c',
+            'source ../miniconda3/etc/profile.d/conda.sh'
             'source setup-env.sh',
             'cd examples',
             python_bin, "run_streamhls.py",
