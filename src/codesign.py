@@ -425,6 +425,9 @@ class Codesign:
 
         streamhls_opt_level = int(self.cfg["args"].get("streamhls_opt_level", 5))
         cmd = [
+            'bash', '-c',
+            'source setup-env.sh',
+            'cd examples',
             python_bin, "run_streamhls.py",
             "-b", save_path, "-d", save_path, "-k", self.benchmark_name,
             "-O", str(streamhls_opt_level), "--dsps", str(self.cur_dsp_usage),
