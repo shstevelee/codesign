@@ -50,6 +50,14 @@ jobs:
               # Add the ScaleHLS python packages to PYTHONPATH for the runner
               echo "PYTHONPATH=$PYTHONPATH:${{ env.PREINSTALLED_SCALEHLS_PATH }}/build/tools/scalehls/python_packages/scalehls_core" >> $GITHUB_ENV
 
+          - name: Update PATH and PYTHONPATH for StreamHLS
+            run: |
+              # Add StreamHLS binaries to PATH
+              echo "${{ env.PREINSTALLED_STREAMHLS_PATH }}/bin" >> $GITHUB_PATH
+              
+              # Add StreamHLS to PYTHONPATH if needed
+              echo "PYTHONPATH=$PYTHONPATH:${{ env.PREINSTALLED_STREAMHLS_PATH }}" >> $GITHUB_ENV
+              
           - name: Start Env
             run: ./full_env_start.sh
 
