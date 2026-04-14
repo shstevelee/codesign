@@ -18,7 +18,7 @@ on:
 jobs:
     test:
         name: Codesign Quick Test
-        runs-on: self-hosted
+        runs-on: [self-hosted, bluey-quick]
         steps:
           - name: Remove old workspace
             run: |
@@ -57,7 +57,7 @@ jobs:
               
               # Add StreamHLS to PYTHONPATH if needed
               echo "PYTHONPATH=$PYTHONPATH:${{ env.PREINSTALLED_STREAMHLS_PATH }}" >> $GITHUB_ENV
-              
+
           - name: Start Env
             run: ./full_env_start.sh
 
