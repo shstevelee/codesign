@@ -1,15 +1,62 @@
-name: Codesign Quick Testing Workflow
-
+name: Codesign Quicktest Workflow
+env:
+  AMPL_UUID: ${{ secrets.UUID }}
+  UNIVERSITY: "cmu"
+  OPENROAD_PRE_INSTALLED: 1
+  PREINSTALLED_OPENROAD_PATH: "/scratch/openroad_executable/openroad"
+  
 on:
-    workflow_dispatch:
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
 
 jobs:
-    test:
-        name: Codesign Quick Test
-        runs-on: bluey-seunghyeok
-        steps:
-            - name: Print Hello World
-              run:  |
-                echo "Hello World"
-            - name: Confirm End
-              run: echo "Quick Test Done"
+  quicktest:
+    name: Codesign-Quick-Test
+    runs-on: bluey-CMU
+    timeout-minutes: 60 
+    
+    steps:
+      - name: Clean Workspace (Preserve Heavy Environments)
+        run: |
+          echo ">>> Cleaning tracked files and resetting repo state..."
+          git reset --hard || true
+          
+          echo ">>> Removing untracked files BUT keeping build artifacts..."
+          # We use -e (exclude) to save the Conda environment, MLIR venv, 
+          # OpenROAD submodule, and the build.log so the script does an incremental build!
+          git clean -ffdx \
+            -e miniconda3/ \
+            -e mlir_venv/ \
+            -e openroad_interface/ \
+            -e setup_scripts/build.log \
+            -e ampl_uuid.txt || true
+          
+      - name: Check out repository code
+        uses: actions/checkout@v5
+        with:
+          # Tell checkout not to wipe our preserved folders
+          clean: false 
+
+      - name: Environment Setup (Incremental)
+        run: |
+          echo ">>> Triggering Environment Start"
+          # Ensure execution permissions
+          chmod +x full_env_start.sh || true
+          
+          # Run the setup. Because miniconda3 and build.log exist, 
+          # this will take seconds instead of hours!
+          ./full_env_start.sh
+
+      - name: Run Codesign Regression Tests
+        run: |
+          echo ">>> Running regression tests..."
+          # Source the environment directly just to be safe
+          source full_env_start_inside.sh
+          
+          # Run the regression Python script using the github_autotest_mode flag
+          python3 -m test.regression_run \
+            -l auto_tests/auto-test.list.yaml \
+            -g \
+            -m 10 \
+            --preinstalled_openroad_path "$PREINSTALLED_OPENROAD_PATH"
