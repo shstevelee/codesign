@@ -2,8 +2,6 @@
 
 AUTOTEST_REGRESSION_PATH="auto_tests/auto-test.list.yaml"
 
-PREINSTALLED_OPENROAD_PATH="/scratch/seunghyeok/openroad_executable/openroad"
-
 set -eo pipefail
 
 shopt -s expand_aliases
