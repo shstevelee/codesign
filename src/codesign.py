@@ -437,7 +437,7 @@ class Codesign:
                 cmd, 
                 stdout=outfile, 
                 stderr=subprocess.STDOUT, 
-                cwd=streamhls_dir, 
+                cwd=streamhls_root, 
                 env=os.environ.copy()
             )
             p.wait()
